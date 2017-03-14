@@ -38,6 +38,8 @@ type Site struct {
 	Host string
 	// RedisURL defines the redis instance to use. If it is empty REDISURL environment variable will be used.
 	RedisURL string
+	ShortMin int
+	ShortMax int
 }
 
 func (site Site) redisURL() string {
@@ -70,7 +72,7 @@ func (site Site) saveShort(url string) (shortest string, err error) {
 		return site.Host + similar, nil
 	}
 
-	for hashShortestLen := 1; hashShortestLen <= 32; hashShortestLen++ {
+	for hashShortestLen := site.ShortMin; hashShortestLen <= site.ShortMax; hashShortestLen++ {
 		s, _ := redisdb.Do("GET", hash[0:hashShortestLen])
 		if s == nil {
 			shortest = hash[0:hashShortestLen]
